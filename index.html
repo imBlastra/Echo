@@ -45,7 +45,6 @@
 
     document.getElementById('chatForm').onsubmit = function(e) {
       e.preventDefault();
-      const user = document.getElementById('userSelect').value;
       const text = document.getElementById('chatInput').value.trim();
       if (!text) return;
       messages.push({ user, text });
@@ -54,7 +53,6 @@
       renderMessages();
     };
 
-    document.getElementById('userSelect').onchange = renderMessages;
 
     function clearChat() {
       messages = [];
