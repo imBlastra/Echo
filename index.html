@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vertex Echo</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f7f9fb; margin: 0; }
+    .chat-container { max-width: 400px; margin: 40px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 10px #0001; padding: 1rem; }
+    .user-select { margin-bottom: 1rem; }
+    .chat-messages { min-height: 200px; max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px; padding: 0.5rem; margin-bottom: 1rem; background: #f4f4fa; }
+    .chat-message { margin: 0.3rem 0; }
+    .chat-message.me { text-align: right; color: #232946; }
+    .chat-message.other { text-align: left; color: #3e3e3e; }
+    .chat-input { display: flex; gap: 0.5rem; }
+    input, button { padding: 0.5rem; border-radius: 5px; border: 1px solid #ccc; }
+    .clear-btn { margin-top: 1rem; background: #eebbc3; border: none; color: #232946; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="user-select">
+      <label>Chat as:
+        <select id="userSelect">
+          <option value="John">John</option>
+          <option value="Jane">Jane</option>
+        </select>
+      </label>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <form class="chat-input" id="chatForm">
+      <input type="text" id="chatInput" placeholder="Type a message..." autocomplete="off" required>
+      <button type="submit">Send</button>
+    </form>
+    <button class="clear-btn" onclick="clearChat()">Clear Chat</button>
+  </div>
+  <script>
+    // --- Chat Logic ---
+    const chatKey = "vertexLocalChat";
+    let messages = JSON.parse(localStorage.getItem(chatKey) || "[]");
+
+    function renderMessages() {
+      const user = document.getElementById('userSelect').value;
+      const chatMessages = document.getElementById('chatMessages');
+      chatMessages.innerHTML = '';
+      messages.forEach(msg => {
+        const div = document.createElement('div');
+        div.className = 'chat-message ' + (msg.user === user ? 'me' : 'other');
+        div.textContent = msg.user + ": " + msg.text;
+        chatMessages.appendChild(div);
+      });
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    document.getElementById('chatForm').onsubmit = function(e) {
+      e.preventDefault();
+      const user = document.getElementById('userSelect').value;
+      const text = document.getElementById('chatInput').value.trim();
+      if (!text) return;
+      messages.push({ user, text });
+      localStorage.setItem(chatKey, JSON.stringify(messages));
+      document.getElementById('chatInput').value = '';
+      renderMessages();
+    };
+
+    document.getElementById('userSelect').onchange = renderMessages;
+
+    function clearChat() {
+      messages = [];
+      localStorage.removeItem(chatKey);
+      renderMessages();
+    }
+
+    // Initial render
+    renderMessages();
+  </script>
+</body>
+</html>
